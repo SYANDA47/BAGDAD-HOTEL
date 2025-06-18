@@ -5,4 +5,4 @@ nixPkgs = ["python311"]
 cmds = ["pip install -r requirements.txt"]
 
 [phases.start]
-cmd = "python manage.py migrate && gunicorn bar_website.wsgi:application --bind 0.0.0.0:$PORT --log-file -"
+cmd = "python manage.py migrate && gunicorn Bar_project.wsgi --log-file -"
