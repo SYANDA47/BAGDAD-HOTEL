@@ -1,0 +1,30 @@
+/* Custom styles for Mzuri Bar & Lodge */
+.navbar-brand {
+  font-weight: bold;
+  color: #d4a574 !important;
+}
+
+.hero-section {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/static/images/bar-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #d4a574;
+  border-color: #d4a574;
+}
+
+.btn-primary:hover {
+  background-color: #b8935f;
+  border-color: #b8935f;
+}

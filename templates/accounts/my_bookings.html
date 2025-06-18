@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - Bagdad Bar & Lodge{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-bed"></i> My Bookings</h2>
+        <a href="{% url 'accommodation:room_list' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Booking
+        </a>
+    </div>
+    
+    {% if page_obj %}
+        <div class="row">
+            {% for booking in page_obj %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title">{{ booking.room.room_type.name }}</h5>
+                            <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% else %}secondary{% endif %}">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </div>
+                        <p class="card-text">
+                            <strong>Room:</strong> {{ booking.room.room_number }}<br>
+                            <strong>Check-in:</strong> {{ booking.check_in_date }}<br>
+                            <strong>Check-out:</strong> {{ booking.check_out_date }}<br>
+                            <strong>Guests:</strong> {{ booking.guests_count }}<br>
+                            <strong>Total Price:</strong> KSh {{ booking.total_price }}
+                        </p>
+                        {% if booking.special_requests %}
+                        <p class="card-text">
+                            <strong>Special Requests:</strong><br>
+                            <small class="text-muted">{{ booking.special_requests }}</small>
+                        </p>
+                        {% endif %}
+                        <small class="text-muted">Booked on {{ booking.created_at|date:"F d, Y" }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Bookings pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center">
+            <i class="fas fa-bed fa-5x text-muted mb-3"></i>
+            <h4>No Bookings Yet</h4>
+            <p class="text-muted">You haven't made any room bookings yet.</p>
+            <a href="{% url 'accommodation:room_list' %}" class="btn btn-primary">Book Your First Room</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
