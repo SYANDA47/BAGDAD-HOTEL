@@ -9,12 +9,13 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "python manage.py migrate --noinput",
-  "python manage.py collectstatic --noinput --clear"
+  "python manage.py collectstatic --noinput --clear",
+  "python manage.py migrate --noinput"
 ]
 
 [start]
-cmd = "gunicorn Bar_project.wsgi:application --bind 0.0.0.0:$PORT"
+cmd = "gunicorn Bar_project.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
 
 [variables]
 DJANGO_SETTINGS_MODULE = "Bar_project.settings"
+PYTHONPATH = "/app"
