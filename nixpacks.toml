@@ -1,11 +1,21 @@
 [phases.setup]
-nixPkgs = ["python39", "nodejs-18_x"]
+nixPkgs = ["python311", "nodejs-20_x", "postgresql"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt"]
+cmds = [
+    "pip install --upgrade pip",
+    "pip install -r requirements.txt"
+]
 
 [phases.build]
-cmds = ["python manage.py collectstatic --noinput"]
+cmds = [
+    "python manage.py migrate --noinput",
+    "python manage.py collectstatic --noinput --clear"
+]
 
 [start]
-cmd = "gunicorn Bar_project.wsgi:application --bind 0.0.0.0:$PORT"
+cmd = "gunicorn Bar_project.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --timeout 120"
+
+[variables]
+PYTHONPATH = "/app"
+DJANGO_SETTINGS_MODULE = "Bar_project.settings"
