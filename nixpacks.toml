@@ -1,4 +1,4 @@
-[phases.setup]
+﻿[phases.setup]
 nixPkgs = ["python311", "nodejs-20_x", "postgresql"]
 
 [phases.install]
