@@ -88,8 +88,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For developm
 EMAIL_HOST = 'smtp.gmail.com'  # or your email provider
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'your-email@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'your-app-password')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'Bagdad@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'Bagdad@gmail.com')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # SMS Configuration (using Africa's Talking or similar)

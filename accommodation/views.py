@@ -4,9 +4,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import Room, RoomType, Booking
 from .forms import BookingForm
+import traceback
 
 def send_booking_email(booking):
-    """Send booking confirmation email"""
+    """Send booking confirmation email with detailed error logging"""
     subject = f'Booking Confirmation - Room {booking.room.room_number}'
     
     message = f"""
@@ -34,6 +35,11 @@ Hotel Management Team
     """
     
     try:
+        print(f"Attempting to send email to: {booking.guest_email}")
+        print(f"From email: {settings.DEFAULT_FROM_EMAIL}")
+        print(f"Email host: {settings.EMAIL_HOST}")
+        print(f"Email host user: {settings.EMAIL_HOST_USER}")
+        
         send_mail(
             subject=subject,
             message=message,
@@ -41,9 +47,11 @@ Hotel Management Team
             recipient_list=[booking.guest_email],
             fail_silently=False,
         )
+        print("Email sent successfully!")
         return True
     except Exception as e:
-        print(f"Email failed: {e}")
+        print(f"Email failed with error: {str(e)}")
+        print(f"Full traceback: {traceback.format_exc()}")
         return False
 
 def accommodation_list(request):
@@ -69,7 +77,7 @@ def book_room(request, room_id):
         if form.is_valid():
             booking = form.save(commit=False)
             booking.room = room
-            booking.save()  # The save method will calculate total_price automatically
+            booking.save()
             
             # Mark room as unavailable
             room.is_available = False
@@ -89,13 +97,16 @@ def book_room(request, room_id):
 def booking_confirmation(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     
+    print(f"Processing booking confirmation for booking ID: {booking_id}")
+    print(f"Guest email: {booking.guest_email}")
+    
     # Send confirmation email
     email_sent = send_booking_email(booking)
     
     if email_sent:
         messages.success(request, f'Confirmation email sent to {booking.guest_email}')
     else:
-        messages.error(request, 'Booking confirmed but email could not be sent')
+        messages.error(request, 'Booking confirmed but email could not be sent. Please check the console for errors.')
     
     context = {
         'booking': booking,
