@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}My Reservations - Bagdad Bar & Lodge{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-calendar-alt"></i> My Reservations</h2>
+        <a href="{% url 'bar_app:reservation' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Reservation
+        </a>
+    </div>
+    
+    {% if page_obj %}
+        <div class="row">
+            {% for reservation in page_obj %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Table {{ reservation.table.table_number }}</h5>
+                        <p class="card-text">
+                            <strong>Date:</strong> {{ reservation.date }}<br>
+                            <strong>Time:</strong> {{ reservation.time }}<br>
+                            <strong>Party Size:</strong> {{ reservation.party_size }} guests<br>
+                            <strong>Location:</strong> {{ reservation.table.location }}
+                        </p>
+                        {% if reservation.special_requests %}
+                        <p class="card-text">
+                            <strong>Special Requests:</strong><br>
+                            <small class="text-muted">{{ reservation.special_requests }}</small>
+                        </p>
+                        {% endif %}
+                        <small class="text-muted">Reserved on {{ reservation.created_at|date:"F d, Y" }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Reservations pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center">
+            <i class="fas fa-calendar-times fa-5x text-muted mb-3"></i>
+            <h4>No Reservations Yet</h4>
+            <p class="text-muted">You haven't made any table reservations yet.</p>
+            <a href="{% url 'bar_app:reservation' %}" class="btn btn-primary">Make Your First Reservation</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

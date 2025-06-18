@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center mb-4">Make a Reservation</h1>
+            
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.customer_name.id_for_label }}" class="form-label">Name</label>
+                        {{ form.customer_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.customer_phone.id_for_label }}" class="form-label">Phone</label>
+                        {{ form.customer_phone }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.customer_email.id_for_label }}" class="form-label">Email</label>
+                    {{ form.customer_email }}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.date.id_for_label }}" class="form-label">Date</label>
+                        {{ form.date }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.time.id_for_label }}" class="form-label">Time</label>
+                        {{ form.time }}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.table.id_for_label }}" class="form-label">Table</label>
+                        {{ form.table }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.party_size.id_for_label }}" class="form-label">Party Size</label>
+                        {{ form.party_size }}
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
+                    {{ form.special_requests }}
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Make Reservation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

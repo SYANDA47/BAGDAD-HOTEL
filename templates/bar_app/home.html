@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="home-hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 mb-4">Welcome to Bagdad Bar & Lodge</h1>
+        <p class="lead mb-4">Premium Beers • Authentic Nyama Choma • Comfortable Accommodation</p>
+        <a href="{% url 'bar_app:beer_menu' %}" class="btn btn-primary btn-lg me-3">View Beer Menu</a>
+        <a href="{% url 'accommodation:room_list' %}" class="btn btn-outline-light btn-lg">Book a Room</a>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Welcome Section -->
+    <section class="text-center mb-5">
+        <h2>Experience Kenyan Hospitality</h2>
+        <p class="lead">At Bagdad Bar & Lodge, we offer the perfect blend of great drinks, delicious food, and comfortable accommodation.</p>
+    </section>
+
+    <!-- Features Section -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card text-center h-100 card-hover">
+                <div class="card-body">
+                    <i class="fas fa-beer fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Premium Beers</h5>
+                    <p class="card-text">Enjoy a wide selection of local and imported beers, from refreshing lagers to rich stouts.</p>
+                    <a href="{% url 'bar_app:beer_menu' %}" class="btn btn-primary">View Menu</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card text-center h-100 card-hover">
+                <div class="card-body">
+                    <i class="fas fa-drumstick-bite fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Authentic Nyama Choma</h5>
+                    <p class="card-text">Savor our perfectly grilled meats, prepared with traditional spices and cooking methods.</p>
+                    <a href="{% url 'bar_app:nyama_menu' %}" class="btn btn-primary">Order Now</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card text-center h-100 card-hover">
+                <div class="card-body">
+                    <i class="fas fa-bed fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Comfortable Rooms</h5>
+                    <p class="card-text">Rest in our well-appointed rooms with modern amenities and excellent service.</p>
+                    <a href="{% url 'accommodation:room_list' %}" class="btn btn-primary">Book Room</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Items Section (only show if items exist) -->
+    {% if featured_beers %}
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Featured Beers</h2>
+        <div class="row">
+            {% for beer in featured_beers %}
+            <div class="col-md-4 mb-4">
+                <div class="card card-hover h-100">
+                    {% if beer.image %}
+                        <img src="{{ beer.image.url }}" class="card-img-top" alt="{{ beer.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-beer fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ beer.brand }} {{ beer.name }}</h5>
+                        <p class="card-text">{{ beer.description|truncatewords:15 }}</p>
+                        <p class="text-muted">{{ beer.get_beer_type_display }} • {{ beer.alcohol_content }}% ABV</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 text-primary">KSh {{ beer.price }}</span>
+                            <button class="btn btn-primary btn-sm">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{% url 'bar_app:beer_menu' %}" class="btn btn-outline-primary">View All Beers</a>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if featured_nyama %}
+    <!-- Featured Nyama Choma Section -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Signature Nyama Choma</h2>
+        <div class="row">
+            {% for nyama in featured_nyama %}
+            <div class="col-md-6 mb-4">
+                <div class="card card-hover">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if nyama.image %}
+                                <img src="{{ nyama.image.url }}" class="img-fluid rounded-start h-100" alt="{{ nyama.name }}" style="object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center h-100 rounded-start">
+                                    <i class="fas fa-drumstick-bite fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ nyama.name }}</h5>
+                                <p class="card-text">{{ nyama.description|truncatewords:10 }}</p>
+                                <p class="text-muted">{{ nyama.get_meat_type_display }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="h6 text-primary">KSh {{ nyama.price_per_kg }}/kg</span>
+                                    <div>
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= nyama.spice_level %}
+                                                <i class="fas fa-pepper-hot text-danger"></i>
+                                            {% else %}
+                                                <i class="far fa-circle text-muted"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{% url 'bar_app:nyama_menu' %}" class="btn btn-outline-primary">View Full Menu</a>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if available_rooms %}
+    <!-- Accommodation Preview -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Stay With Us</h2>
+        <div class="row">
+            {% for room in available_rooms %}
+            <div class="col-md-4 mb-4">
+                <div class="card card-hover h-100">
+                    {% if room.image %}
+                        <img src="{{ room.image.url }}" class="card-img-top" alt="{{ room.room_type.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-bed fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ room.room_type.name }}</h5>
+                        <p class="card-text">{{ room.room_type.description|truncatewords:15 }}</p>
+                        <p class="text-muted">Room {{ room.room_number }} • Up to {{ room.room_type.max_occupancy }} guests</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 text-primary">KSh {{ room.room_type.base_price }}/night</span>
+                            <a href="{% url 'accommodation:room_detail' room.id %}" class="btn btn-primary btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{% url 'accommodation:room_list' %}" class="btn btn-outline-primary">View All Rooms</a>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Call to Action -->
+    <section class="text-center bg-white p-5 rounded shadow-sm">
+        <h3>Ready to Experience Bagdad?</h3>
+        <p class="lead">Make a reservation today and enjoy the best of Kenyan hospitality.</p>
+        <a href="{% url 'bar_app:reservation' %}" class="btn btn-primary btn-lg">Make Reservation</a>
+    </section>
+</div>
+{% endblock %}

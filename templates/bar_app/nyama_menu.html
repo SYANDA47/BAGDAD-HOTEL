@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Nyama Choma Menu</h1>
+    
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <select class="form-select" onchange="filterByMeatType(this.value)">
+                <option value="">All Meat Types</option>
+                {% for type_code, type_name in meat_types %}
+                    <option value="{{ type_code }}" {% if current_meat_type == type_code %}selected{% endif %}>
+                        {{ type_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Nyama Choma Grid -->
+    <div class="row">
+        {% for nyama in nyama_items %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if nyama.image %}
+                            <img src="{{ nyama.image.url }}" class="img-fluid rounded-start h-100" alt="{{ nyama.name }}" style="object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center h-100 rounded-start">
+                                <i class="fas fa-drumstick-bite fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ nyama.name }}</h5>
+                            <p class="card-text">{{ nyama.description }}</p>
+                            <p class="text-muted">{{ nyama.get_meat_type_display }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h6 text-primary">KSh {{ nyama.price_per_kg }}/kg</span>
+                                <div>
+                                    <small class="text-muted">Spice Level: </small>
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= nyama.spice_level %}
+                                            <i class="fas fa-pepper-hot text-danger"></i>
+                                        {% else %}
+                                            <i class="far fa-circle text-muted"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-sm mt-2" onclick="addToCart('nyama', {{ nyama.id }}, '{{ nyama.name }}')">
+                                <i class="fas fa-cart-plus"></i> Order Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="lead">No nyama choma available at the moment.</p>
+            <a href="{% url 'bar_app:home' %}" class="btn btn-primary">Back to Home</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add to Cart Modal for Nyama Choma -->
+<div class="modal fade" id="addToCartModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add to Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addToCartForm">
+                    <div class="mb-3">
+                        <label class="form-label">Item:</label>
+                        <p id="itemName" class="fw-bold"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="weight_kg" class="form-label">Weight (kg):</label>
+                        <input type="number" class="form-control" id="weight_kg" min="0.5" step="0.5" value="1.0">
+                        <div class="form-text">Minimum order: 0.5kg</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Special Notes (optional):</label>
+                        <textarea class="form-control" id="notes" rows="2" placeholder="Any special cooking instructions..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <small><strong>Price:</strong> KSh <span id="pricePerKg"></span>/kg</small><br>
+                            <small><strong>Total:</strong> KSh <span id="totalPrice">0</span></small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="confirmAddToCart()">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentItem = {};
+
+function addToCart(type, id, name) {
+    currentItem = {type: type, id: id, name: name};
+    document.getElementById('itemName').textContent = name;
+    document.getElementById('weight_kg').value = 1.0;
+    document.getElementById('notes').value = '';
+    
+    // Get price per kg for this item
+    const cards = document.querySelectorAll('.card');
+    let pricePerKg = 0;
+    
+    cards.forEach(card => {
+        const button = card.querySelector('button[onclick*="' + id + '"]');
+        if (button) {
+            const priceElement = card.querySelector('.h6.text-primary');
+            if (priceElement) {
+                const priceText = priceElement.textContent;
+                pricePerKg = parseFloat(priceText.replace('KSh ', '').replace('/kg', ''));
+            }
+        }
+    });
+    
+    currentItem.pricePerKg = pricePerKg;
+    document.getElementById('pricePerKg').textContent = pricePerKg;
+    updateTotalPrice();
+    
+    new bootstrap.Modal(document.getElementById('addToCartModal')).show();
+}
+
+function updateTotalPrice() {
+    const weight = parseFloat(document.getElementById('weight_kg').value) || 0;
+    const pricePerKg = currentItem.pricePerKg || 0;
+    const total = weight * pricePerKg;
+    document.getElementById('totalPrice').textContent = total.toFixed(2);
+}
+
+// Update total price when weight changes
+document.addEventListener('DOMContentLoaded', function() {
+    const weightInput = document.getElementById('weight_kg');
+    if (weightInput) {
+        weightInput.addEventListener('input', updateTotalPrice);
+    }
+});
+
+function confirmAddToCart() {
+    const weight_kg = parseFloat(document.getElementById('weight_kg').value);
+    const notes = document.getElementById('notes').value;
+    
+    if (weight_kg < 0.5) {
+        showAlert('warning', 'Minimum order is 0.5kg');
+        return;
+    }
+    
+    fetch('{% url "orders:add_to_cart" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            type: currentItem.type,
+            id: currentItem.id,
+            weight_kg: weight_kg,
+            notes: notes
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cart counter in navbar
+            updateCartCounter(data.cart_total);
+            
+            // Show success message
+            showAlert('success', data.message);
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('addToCartModal')).hide();
+        } else {
+            showAlert('danger', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('danger', 'Error adding item to cart');
+    });
+}
+
+function updateCartCounter(count) {
+    // Update cart counter in navbar if it exists
+    const cartCounter = document.getElementById('cartCounter');
+    if (cartCounter) {
+        cartCounter.textContent = count;
+        cartCounter.style.display = count > 0 ? 'flex' : 'none';
+    }
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('.container');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto-dismiss after 3 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
+
+function filterByMeatType(meatType) {
+    if (meatType) {
+        window.location.href = '?meat_type=' + meatType;
+    } else {
+        window.location.href = window.location.pathname;
+    }
+}
+</script>
+{% endblock %}

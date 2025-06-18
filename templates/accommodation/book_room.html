@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Room Details</h3>
+                </div>
+                <div class="card-body">
+                    <h4>{{ room.room_type.name }}</h4>
+                    <p>Room {{ room.room_number }}</p>
+                    <p>{{ room.room_type.description }}</p>
+                    <p><strong>Max Occupancy:</strong> {{ room.room_type.max_occupancy }} guests</p>
+                    <p><strong>Price:</strong> KSh {{ room.room_type.base_price }} per night</p>
+                    <p><strong>Amenities:</strong> {{ room.amenities }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Book This Room</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="{{ form.guest_name.id_for_label }}" class="form-label">Full Name</label>
+                            {{ form.guest_name }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.guest_email.id_for_label }}" class="form-label">Email</label>
+                            {{ form.guest_email }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.guest_phone.id_for_label }}" class="form-label">Phone</label>
+                            {{ form.guest_phone }}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.check_in_date.id_for_label }}" class="form-label">Check-in Date</label>
+                                {{ form.check_in_date }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.check_out_date.id_for_label }}" class="form-label">Check-out Date</label>
+                                {{ form.check_out_date }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.guests_count.id_for_label }}" class="form-label">Number of Guests</label>
+                            {{ form.guests_count }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.special_requests.id_for_label }}" class="form-label">Special Requests</label>
+                            {{ form.special_requests }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Book Room</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
