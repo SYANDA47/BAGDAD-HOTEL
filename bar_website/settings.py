@@ -32,8 +32,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',  # Add this
-    'django.contrib.sitemaps',  # Add this
     'bar_app',
     'accommodation',
     'accounts',
@@ -110,8 +108,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'your-email@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'your-app-password')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'bagdad@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'bagdad254')
 DEFAULT_FROM_EMAIL = f"Bagdad Hotel <{EMAIL_HOST_USER}>"
 
 # SMS Configuration
@@ -130,6 +128,3 @@ if not DEBUG:
 else:
     # For development, allow HTTP
     CSRF_COOKIE_SECURE = False
-
-# SEO and Sitemap settings
-SITE_ID = 1
